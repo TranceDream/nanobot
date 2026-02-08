@@ -366,6 +366,62 @@ async def test_koishi_send_invalid_chat_id_noop() -> None:
     assert ws.sent == []
 
 
+async def test_koishi_allow_channel_ids_blocks_unlisted_channel() -> None:
+    bus = MessageBus()
+    channel = KoishiChannel(
+        KoishiConfig(enabled=True, allow_channel_ids=["allowed-channel"]),
+        bus,
+    )
+    await channel._handle_payload(
+        {
+            "type": "message",
+            "platform": "qq",
+            "userId": "100",
+            "channelId": "blocked-channel",
+            "content": "blocked",
+        }
+    )
+    assert bus.inbound_size == 0
+
+
+async def test_koishi_allow_channel_ids_allows_listed_channel() -> None:
+    bus = MessageBus()
+    channel = KoishiChannel(
+        KoishiConfig(enabled=True, allow_channel_ids=["allowed-channel"]),
+        bus,
+    )
+    await channel._handle_payload(
+        {
+            "type": "message",
+            "platform": "qq",
+            "userId": "100",
+            "channelId": "allowed-channel",
+            "content": "ok",
+        }
+    )
+    msg = await bus.consume_inbound()
+    assert msg.chat_id == "channel:qq:allowed-channel"
+
+
+async def test_koishi_allow_guild_ids_blocks_unlisted_guild() -> None:
+    bus = MessageBus()
+    channel = KoishiChannel(
+        KoishiConfig(enabled=True, allow_guild_ids=["allowed-guild"]),
+        bus,
+    )
+    await channel._handle_payload(
+        {
+            "type": "message",
+            "platform": "discord",
+            "userId": "100",
+            "channelId": "c1",
+            "guildId": "blocked-guild",
+            "content": "blocked",
+        }
+    )
+    assert bus.inbound_size == 0
+
+
 def test_channel_manager_registers_koishi_when_enabled() -> None:
     config = Config()
     config.channels.koishi.enabled = True

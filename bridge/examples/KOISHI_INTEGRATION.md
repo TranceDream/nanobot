@@ -13,7 +13,9 @@ Edit `~/.nanobot/config.json`:
       "enabled": true,
       "wsUrl": "ws://127.0.0.1:3002/ws",
       "accessToken": "",
-      "allowFrom": []
+      "allowFrom": [],
+      "allowChannelIds": [],
+      "allowGuildIds": []
     }
   }
 }
@@ -40,6 +42,9 @@ export function apply(ctx: Context) {
   const bridge = new NanobotBridge(ctx, {
     wsUrl: 'ws://127.0.0.1:3002/ws',
     token: '',
+    allowUserIds: [],      // 可选：私聊白名单
+    allowChannelIds: [],   // 可选：群/频道白名单
+    allowGuildIds: [],     // 可选：服务器白名单
   })
 
   bridge.start()
@@ -58,4 +63,4 @@ The bridge handles this mapping for you.
 
 - Set `token` on both sides (`accessToken` in nanobot + bridge token in Koishi).
 - Bind bridge to `127.0.0.1` unless remote access is required.
-- Use `allowFrom` in nanobot to limit permitted users.
+- Use `allowFrom` / `allowChannelIds` / `allowGuildIds` in nanobot to limit scope.

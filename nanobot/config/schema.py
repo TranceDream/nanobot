@@ -53,6 +53,8 @@ class KoishiConfig(BaseModel):
     ws_url: str = "ws://127.0.0.1:3002/ws"
     access_token: str = ""
     allow_from: list[str] = Field(default_factory=list)  # Allowed user IDs
+    allow_channel_ids: list[str] = Field(default_factory=list)  # Allowed channel IDs
+    allow_guild_ids: list[str] = Field(default_factory=list)  # Allowed guild IDs
 
 
 class ChannelsConfig(BaseModel):

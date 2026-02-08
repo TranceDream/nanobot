@@ -172,6 +172,17 @@ class KoishiChannel(BaseChannel):
 
         is_direct = bool(data.get("isDirect"))
         channel_id = data.get("channelId")
+        guild_id = data.get("guildId")
+
+        # Optional allowlist checks for channel/guild scope.
+        allow_channel_ids = set(getattr(self.config, "allow_channel_ids", []))
+        allow_guild_ids = set(getattr(self.config, "allow_guild_ids", []))
+        if not is_direct:
+            if allow_channel_ids and (channel_id is None or str(channel_id) not in allow_channel_ids):
+                return
+            if allow_guild_ids and (guild_id is None or str(guild_id) not in allow_guild_ids):
+                return
+
         if is_direct or not channel_id:
             chat_id = f"private:{platform}:{user_id}"
         else:
@@ -185,7 +196,7 @@ class KoishiChannel(BaseChannel):
             metadata={
                 "message_id": data.get("messageId"),
                 "platform": platform,
-                "guild_id": data.get("guildId"),
+                "guild_id": guild_id,
                 "channel_id": channel_id,
                 "is_direct": is_direct,
                 "raw_event": data,

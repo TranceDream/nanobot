@@ -18,6 +18,9 @@ type BridgeOptions = {
   host?: string
   port?: number
   path?: string
+  allowUserIds?: string[]
+  allowChannelIds?: string[]
+  allowGuildIds?: string[]
 }
 
 type InboundFromNanobot = {
@@ -80,6 +83,7 @@ export class NanobotBridge {
 
     this.ctx.on('message', async (session) => {
       if (this.isBotSelf(session)) return
+      if (!this.isAllowedSession(session)) return
       const payload = this.sessionToPayload(session)
       this.broadcast(payload)
     })
@@ -128,5 +132,21 @@ export class NanobotBridge {
 
   private isBotSelf(session: Session): boolean {
     return !!session.user?.isBot
+  }
+
+  private isAllowedSession(session: Session): boolean {
+    const allowUserIds = new Set((this.options.allowUserIds || []).map(String))
+    const allowChannelIds = new Set((this.options.allowChannelIds || []).map(String))
+    const allowGuildIds = new Set((this.options.allowGuildIds || []).map(String))
+
+    const isDirect = session.isDirect ?? !session.guildId
+    if (isDirect) {
+      if (allowUserIds.size && !allowUserIds.has(String(session.userId))) return false
+      return true
+    }
+
+    if (allowChannelIds.size && !allowChannelIds.has(String(session.channelId))) return false
+    if (allowGuildIds.size && !allowGuildIds.has(String(session.guildId || ''))) return false
+    return true
   }
 }

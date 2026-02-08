@@ -369,6 +369,20 @@ def channels_status():
         "✓" if dc.enabled else "✗",
         dc.gateway_url
     )
+
+    ob = config.channels.onebot
+    table.add_row(
+        "OneBot",
+        "✓" if ob.enabled else "✗",
+        ob.ws_url
+    )
+
+    ks = config.channels.koishi
+    table.add_row(
+        "Koishi",
+        "✓" if ks.enabled else "✗",
+        ks.ws_url
+    )
     
     # Telegram
     tg = config.channels.telegram

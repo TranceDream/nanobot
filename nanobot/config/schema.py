@@ -39,12 +39,30 @@ class DiscordConfig(BaseModel):
     intents: int = 37377  # GUILDS + GUILD_MESSAGES + DIRECT_MESSAGES + MESSAGE_CONTENT
 
 
+class OneBotConfig(BaseModel):
+    """OneBot v11 channel configuration."""
+    enabled: bool = False
+    ws_url: str = "ws://127.0.0.1:8080/ws"
+    access_token: str = ""
+    allow_from: list[str] = Field(default_factory=list)  # Allowed QQ user IDs
+
+
+class KoishiConfig(BaseModel):
+    """Koishi bridge channel configuration."""
+    enabled: bool = False
+    ws_url: str = "ws://127.0.0.1:3002/ws"
+    access_token: str = ""
+    allow_from: list[str] = Field(default_factory=list)  # Allowed user IDs
+
+
 class ChannelsConfig(BaseModel):
     """Configuration for chat channels."""
     whatsapp: WhatsAppConfig = Field(default_factory=WhatsAppConfig)
     telegram: TelegramConfig = Field(default_factory=TelegramConfig)
     discord: DiscordConfig = Field(default_factory=DiscordConfig)
     feishu: FeishuConfig = Field(default_factory=FeishuConfig)
+    onebot: OneBotConfig = Field(default_factory=OneBotConfig)
+    koishi: KoishiConfig = Field(default_factory=KoishiConfig)
 
 
 class AgentDefaults(BaseModel):

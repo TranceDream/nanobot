@@ -84,6 +84,28 @@ class ChannelManager:
                 logger.info("Feishu channel enabled")
             except ImportError as e:
                 logger.warning(f"Feishu channel not available: {e}")
+
+        # OneBot channel
+        if self.config.channels.onebot.enabled:
+            try:
+                from nanobot.channels.onebot import OneBotChannel
+                self.channels["onebot"] = OneBotChannel(
+                    self.config.channels.onebot, self.bus
+                )
+                logger.info("OneBot channel enabled")
+            except ImportError as e:
+                logger.warning(f"OneBot channel not available: {e}")
+
+        # Koishi channel
+        if self.config.channels.koishi.enabled:
+            try:
+                from nanobot.channels.koishi import KoishiChannel
+                self.channels["koishi"] = KoishiChannel(
+                    self.config.channels.koishi, self.bus
+                )
+                logger.info("Koishi channel enabled")
+            except ImportError as e:
+                logger.warning(f"Koishi channel not available: {e}")
     
     async def _start_channel(self, name: str, channel: BaseChannel) -> None:
         """Start a channel and log any exceptions."""
